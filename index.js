@@ -1,3 +1,4 @@
+const cron = require("node-cron");
 const { TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
 const prompt = require("prompt-sync")({ sigint: true });
@@ -53,6 +54,7 @@ function filterMessagesOlderThan(messages, date, time) {
   return filteredMessages;
 }
 
+cron.schedule("0 22 * * *", () => {
 (async () => {
   console.log("Loading interactive example...");
   const client = new TelegramClient(stringSession, apiId, apiHash, {
@@ -216,8 +218,4 @@ function filterMessagesOlderThan(messages, date, time) {
   });
   bot.login(botKey);
 })();
-
-// time to wait before closing the program
-setTimeout(() => {
-  process.exit();
-}, 20000);
+});
