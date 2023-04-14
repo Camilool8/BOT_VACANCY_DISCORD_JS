@@ -206,4 +206,4 @@ function filterMessagesOlderThan(messages, date, time) {
 // time to wait before closing the program
 setTimeout(() => {
   process.exit();
-}, 10000);
+}, 20000);
