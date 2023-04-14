@@ -173,11 +173,11 @@ function filterMessagesOlderThan(messages, date, time) {
     if (allMessages.length == 0) {
       bot.channels.cache
         .get(process.env.CHANNEL_ID)
-        .send("**No hay vacantes nuevas :(**");
+        .send("**No han habido vacantes nuevas recientemente :(**");
     } else {
       bot.channels.cache
         .get(process.env.CHANNEL_ID)
-        .send("**Estas son las vacantes de tecnologia mas recientes:**");
+        .send("**Estas son las vacantes de tecnologia del dia de hoy:**");
       for (let i = 0; i < allMessages.length; i++) {
         Vacantes.push(allMessages[i].split(" ").slice(2).join(" "));
       }
