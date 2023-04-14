@@ -4,6 +4,7 @@ const prompt = require("prompt-sync")({ sigint: true });
 const dotenv = require("dotenv");
 const { Client, IntentsBitField } = require("discord.js");
 const fs = require("fs");
+const { all } = require("axios");
 
 dotenv.config();
 
@@ -143,14 +144,18 @@ function filterMessagesOlderThan(messages, date, time) {
   }
 
   // get the newest message date and time
-  let newestMessage = allMessages[0].split(" ");
-  let newestDate = newestMessage[0];
-  let newestTime = newestMessage[1];
+  if (allMessages.length == 0) {
+    allMessages = [];
+  } else {
+    let newestMessage = allMessages[0].split(" ");
+    let newestDate = newestMessage[0];
+    let newestTime = newestMessage[1];
 
-  fs.writeFileSync(
-    "./dates.json",
-    JSON.stringify({ newestDate, newestTime }, null, 2)
-  );
+    fs.writeFileSync(
+      "./dates.json",
+      JSON.stringify({ newestDate, newestTime }, null, 2)
+    );
+  }
 
   // discord bot
 
@@ -165,25 +170,34 @@ function filterMessagesOlderThan(messages, date, time) {
   bot.on("ready", () => {
     console.log("Bot is ready!");
     let Vacantes = [];
-    for (let i = 0; i < allMessages.length; i++) {
-      Vacantes.push(allMessages[i].split(" ").slice(2).join(" "));
-    }
+    if (allMessages.length == 0) {
+      bot.channels.cache
+        .get(process.env.CHANNEL_ID)
+        .send("**No hay vacantes nuevas :(**");
+    } else {
+      bot.channels.cache
+        .get(process.env.CHANNEL_ID)
+        .send("**Estas son las vacantes de tecnologia mas recientes:**");
+      for (let i = 0; i < allMessages.length; i++) {
+        Vacantes.push(allMessages[i].split(" ").slice(2).join(" "));
+      }
 
-    Vacantes.forEach((vacante) => {
+      Vacantes.forEach((vacante) => {
+        bot.channels.cache
+          .get(process.env.CHANNEL_ID)
+          .send(
+            vacante +
+              "\n" +
+              "--------------------------------------------------------------------------------------------"
+          );
+      });
+
       bot.channels.cache
         .get(process.env.CHANNEL_ID)
         .send(
-          vacante +
-            "\n" +
-            "--------------------------------------------------------------------------------------------"
+          "**Estas han sido las vacantes de tecnologia mas recientes, buenas noches ;)**"
         );
-    });
-
-    bot.channels.cache
-      .get(process.env.CHANNEL_ID)
-      .send(
-        "**Estas han sido las vacantes de tecnologia mas recientes, buenas noches ;)**"
-      );
+    }
   });
 
   bot.on("messageCreate", async (message) => {
